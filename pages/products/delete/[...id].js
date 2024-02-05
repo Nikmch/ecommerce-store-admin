@@ -1,0 +1,43 @@
+import Layout from "@/components/layout";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { useEffect } from "react";
+
+export default function DeleteProductPage(){
+const router =useRouter();
+const [productInfo, setProductInfo] = useState();
+const {id} = router.query;
+useEffect(() => {
+if (!id) {
+    return;
+} 
+    axios.get('/api/products?id='+id).then(response => {
+       setProductInfo(response.data);
+    });
+}, [id]);
+
+async function deleteProduct(){
+    await axios.delete('/api/products?id='+id);
+    goBack();
+}
+
+function goBack(){
+    router.push('/products');
+}
+    return (
+      <Layout>
+        <h1 className="text-center">Do you want to delete &nbsp;&quot;{productInfo?.title}&quot;?</h1>
+        <div className="flex gap-2 justify-center">
+          <button 
+          className="btn-red"
+          onClick={deleteProduct}
+          >Yes</button>
+
+          <button className="btn-default" onClick={goBack}>
+            No
+          </button>
+        </div>
+      </Layout>
+    );
+}
